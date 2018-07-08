@@ -17,6 +17,16 @@
 			flex-wrap: wrap;
 			position: absolute;
 			top: 0;
+			right: 0;
+		}
+		
+			#status {
+			width: 300px;
+			background-color: #f1f1f1;
+			display: flex;
+			flex-wrap: wrap;
+			position: absolute;
+			top: 0;
 		}
 
 		.swatch {
@@ -56,17 +66,53 @@
 			}
 
 			// your rectangle gradient interaction goes in this function
+
 			// you may also add code outside of the function (e.g., global variables)
 			function myGradientInteraction(){
 				var tool = new paper.Tool();
 
+				
+				//first_rectangle
+				var MyRectangle = new paper.Path.Rectangle(new paper.Point(245, 290), new paper.Size(250, 100));
+				MyRectangle.fillColor = "red";
+				
+				//origin_point before saving the point
+				var origin_point;
+				var dest_point;
+
 				tool.onMouseDown = function (event) {
-
+					origin_point = event.downPoint;
+					console.log("Mouse Down called");
 				}
-
+				
+				//takes history of color palette
+		
+				
 				tool.onMouseUp = function (event) {
+					var stop_one = cp.history[cp.history.length - 1];
+					var stop_two = cp.history[cp.history.length - 2]; 
+				
+					console.log("Mouse Up Called");
+					console.log(stop_two);
+					console.log(stop_one);
+					console.log(cp.history);
+					var topLeft = paper.view.center - [80, 80];
+					var bottomRight = paper.view.center + [80, 80];
+
 					
+					dest_point = event.point;
+					console.log(origin_point, dest_point);
+					
+					MyRectangle.fillColor = {
+						gradient: {
+						stops: [stop_one, stop_two]
+						},
+						origin: origin_point,
+						destination: dest_point
+				};
 				}
+				
+				
 			}
 
 			// your custom interaction goes here!
@@ -141,7 +187,9 @@
 	</script>
 </head>
 <body>	
-
+	<canvas id="status" width="750px" height="750px"> 
+	
+	</canvas>
 	<canvas id="myCanvas" width="750px" height="750px"></canvas>
 	<div id="color-palette"></div>
 </body>

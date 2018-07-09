@@ -14,8 +14,9 @@
 
 	<style type="text/css">
 		#color-palette {
-			width: 300px;
-			background-color: #f1f1f1;
+      padding: 20px;
+			width: 150px;
+			background-color: #ffffff;
 			display: flex;
 			flex-wrap: wrap;
 			position: absolute;
@@ -45,6 +46,10 @@
 		
 		.btn-draw:active {
 			background-color: #ffde00;
+		}
+		
+		.btn-gradient {
+			background-color: #f1f1f1;
 		}
 		
 		
@@ -103,6 +108,12 @@
 				lastClicked: null,
 				filePath: '/static/coloring/images/mandala-freepik.svg'
 			};	
+			
+			var mim = {
+				item: null,
+				lastClicked: null,
+				filePath: '/static/coloring/images/mim.svg'
+			}
 
 			// color palette
 			var cp = {
@@ -166,27 +177,65 @@
 			function myCustomInteraction() {
 				var tool = new paper.Tool();
 				var fill = true;
+				var gradient = false;
+				var origin_point;
+				var dest_point;
 				
 				$('.btn-draw').click(function() {
 					$('.btn-fill').removeClass('active');
 					$('.btn-fill').css('background-color', '#f1f1f1');
+					$('.btn-gradient').removeClass('active');
+					$('.btn-gradient').css('background-color', '#f1f1f1');
 					$('.btn-draw').addClass('active');
 					$('.btn-draw').css('background-color', '#ffde00');
 					fill = false;
+					gradient = false;
 				});
 				
 				$('.btn-fill').click(function() {
 					$('.btn-draw').removeClass('active');
 					$('.btn-draw').css('background-color', '#f1f1f1');
+					$('.btn-gradient').removeClass('active');
+					$('.btn-gradient').css('background-color', '#f1f1f1');
 					$('.btn-fill').addClass('active');
 					$('.btn-fill').css('background-color', '#ffde00');
 					fill = true;
+					gradient = false;
 				});
 				
+				$('.btn-gradient').click(function() {
+					$('.btn-draw').removeClass('active');
+					$('.btn-draw').css('background-color', '#f1f1f1');
+					$('.btn-fill').removeClass('active');
+					$('.btn-fill').css('background-color', '#f1f1f1');
 
-
+					$('.btn-gradient').addClass('active');
+					$('.btn-gradient').css('background-color', '#ffde00');
+					fill = true;
+					gradient = true;
+				});
+				
+				
 				tool.onMouseDown = function (event) {
-					if (fill) {
+					var stop_one = cp.history[cp.history.length - 1];
+					var stop_two = cp.history[cp.history.length - 2];
+					var stop_three = cp.history[cp.history.length - 3]; 
+			
+					origin_point = event.point;
+					dest_point = paper.view.center;
+					if (gradient === true) {
+						console.log("gradient true")
+						var hit = mandala.item.hitTest(event.point, { tolerance: 10, fill: true });
+						if (hit) {
+							hit.item.fillColor = {
+								gradient: {
+									stops: [stop_one, stop_two, stop_three]
+								},
+								origin: origin_point,
+								destination: dest_point
+							};
+						}
+					} else if (fill) {
 						var hit = mandala.item.hitTest(event.point, { tolerance: 10, fill: true });
 						if (hit) {
 							hit.item.fillColor = cp.history[cp.history.length - 1];
@@ -201,9 +250,16 @@
 						center: event.middlePoint,
 						radius: 7
 						});
-						draw.fillColor = cp.history[cp.history.length - 1];
+						draw.fillColor = {
+							gradient: {
+								stops: [(cp.history[cp.history.length - 1]), 'white'],
+								radial: true
+							},
+							origin: origin_point,
+							destination: dest_point
+						};
 						draw.blendMode = 'multiply';
-						draw.opacity = 0.5;
+						draw.opacity = 0.08;
 					}
 				}
 
@@ -294,20 +350,27 @@
 <body>	
 	<div id="status" width="750px" height="750px"> 
 		<div id="curr-color">
-			current color:
+			Current Color:
 		</div>
 		<div id="curr-swatch">
 			&nbsp;
 		</div>
 		
 		<div class="btn-group btn-group-toggle" data-toggle="buttons">
+			<label class="btn btn-gradient">
+				<input type="radio" name="options" id="option1" autocomplete="off" checked> 
+				<img src="https://png.icons8.com/color/48/000000/color-wheel-2.png">
+			</label>
 			<label class="btn btn-fill active fill">
-				<input type="radio" name="options" id="option1" autocomplete="off" checked> Fill
+				<input type="radio" name="options" id="option1" autocomplete="off" checked> 
+				<img src="https://png.icons8.com/color/40/000000/paint-bucket.png">
 			</label>
 			<label class="btn btn-draw draw">
-				<input type="radio" name="options" id="option2" autocomplete="off"> Draw
+				<input type="radio" name="options" id="option2" autocomplete="off">
+				<img src="https://png.icons8.com/color/40/000000/edit.png">
 			</label>
 		</div>
+		
 
 		
 	</div>

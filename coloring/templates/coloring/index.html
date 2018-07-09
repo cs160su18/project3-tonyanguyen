@@ -24,6 +24,16 @@
 			right: 0;
 		}
 		
+		.btn-dropper {
+			padding: 10px;
+			background-color: #f1f1f1;
+			display: flex;
+			flex-wrap: wrap;
+			position: absolute;
+			top: 255px;
+			right: 43px;
+		}
+		
 		
 		#curr-color {
 		margin-top: 20px;
@@ -215,6 +225,20 @@
 					gradient = true;
 				});
 				
+				$('.btn-dropper').click(function() {
+					if (!($('.btn-dropper').hasClass('active'))) {
+						$('.btn-dropper').addClass('active');
+						$('.btn-dropper').css('background-color', '#5CB3FF');
+						console.log('active');
+						dropper = true;
+					}
+					
+					if ($('.btn-dropper').hasClass('active')) {
+						$('.btn-dropper').removeClass('active');
+						dropper = false;
+						$('.btn-dropper').css('background-color', '#f1f1f1');
+					}
+				});
 				
 				tool.onMouseDown = function (event) {
 					var stop_one = cp.history[cp.history.length - 1];
@@ -225,7 +249,7 @@
 					dest_point = paper.view.center;
 					if (gradient === true) {
 						console.log("gradient true")
-						var hit = mandala.item.hitTest(event.point, { tolerance: 10, fill: true });
+						var hit = mim.item.hitTest(event.point, { tolerance: 10, fill: true });
 						if (hit) {
 							hit.item.fillColor = {
 								gradient: {
@@ -236,7 +260,7 @@
 							};
 						}
 					} else if (fill) {
-						var hit = mandala.item.hitTest(event.point, { tolerance: 10, fill: true });
+						var hit = mim.item.hitTest(event.point, { tolerance: 10, fill: true });
 						if (hit) {
 							hit.item.fillColor = cp.history[cp.history.length - 1];
 						}
@@ -321,9 +345,9 @@
 				paper.setup(canvas);
 				getColorsCreatePalette();
 
-				paper.project.importSVG(mandala.filePath, function(item) { 
-					mandala.item = item._children["design-freepik"];
-				    paper.project.insertLayer(0,mandala.item);
+				paper.project.importSVG(mim.filePath, function(item) { 
+					mim.item = item._children["design-freepik"];
+				    paper.project.insertLayer(0,mim.item);
 
 				    if (custom) {
 				    	myCustomInteraction();	
@@ -376,5 +400,10 @@
 	</div>
 	<canvas id="myCanvas" width="750px" height="750px"></canvas>
 	<div id="color-palette"></div>
+	
+	<label class="btn btn-group-toggle btn-dropper">
+				<input type="radio" name="options" id="option2" autocomplete="off">
+				<img src="https://png.icons8.com/color/48/000000/color-dropper.png">
+	</label>
 </body>
 </html>
